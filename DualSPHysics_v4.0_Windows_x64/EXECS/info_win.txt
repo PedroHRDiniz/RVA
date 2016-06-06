@@ -1,0 +1,23 @@
+GenCase4_win64.exe              //v4.0.025 (15-04-2016)
+DualSPHysics4_win64.exe         //v4.0.055 (15-04-2016)
+DualSPHysics4CPU_win64.exe      //v4.0.055 (15-04-2016)
+PartVTK4_win64.exe              //v4.0.019 (15-04-2016)
+PartVTKOut4_win64.exe		//v4.0.010 (15-04-2016)
+MeasureTool4_win64.exe          //v4.0.020 (15-04-2016)
+ComputeForces4_win64.exe	//v4.0.013 (15-04-2016)
+BoundaryVTK4_win64.exe          //v4.0.014 (13-04-2016)
+IsoSurface4_win64.exe           //v4.0.006 (15-04-2016) 
+FloatingInfo4_win64.exe		//v4.0.004 (13-04-2016)
+cudart64_55.dll                 //Library of Cuda
+cudart64_75.dll                 //Library of Cuda
+vcomp100.dll                    //Library of OpenMP
+vcomp102.dll                    //Library of OpenMP
+
+DualSPHysicsMultiphase_3.4_win64.exe	//v3.4 (16-03-2016)
+
+To run DualSPHysics on GPU, there is no need to install compilers or new 
+software, only an NVIDIA CUDA-enabled GPU card is needed and the last 
+version of the driver must be installed.
+
+Attention: if you got an error executing DualSPHysics_win64.exe, please
+install the RedistPackage.

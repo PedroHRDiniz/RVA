@@ -1,0 +1,98 @@
+
+
+ <DUALSPHYSICS4> Copyright (C) 2016 by
+ Dr Jose M. Dominguez, Dr Alejandro Crespo,
+ Prof. Moncho Gomez Gesteira, Dr Anxo Barreiro,
+ Dr Benedict Rogers, Dr Georgios Fourtakas, Dr Athanasios Mokos,
+ Dr Renato Vacondio, Dr Ricardo Canelas,
+ Dr Stephen Longshaw, Dr Corrado Altomare.
+
+ EPHYSLAB Environmental Physics Laboratory, Universidade de Vigo
+ School of Mechanical, Aerospace and Civil Engineering, University of Manchester
+
+ DualSPHysics is free software: you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation, either version 3 of
+ the License, or (at your option) any later version.
+
+ DualSPHysics is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License,
+ along with DualSPHysics. If not, see <http://www.gnu.org/licenses/>.
+
+
+DualSPHysics4 v4.0.055 (15-04-2016)
+====================================
+Threads by host for parallel execution: 8
+[Initialising JSphCpuSingle v0.70  31-05-2016 16:56:48]
+**Basic case configuration is loaded
+**Special case configuration is loaded
+Loading initial state of particles...
+Loaded particles: 21001
+MapRealPos(border)=(-1.41421e-005,-1.41421e-005,-1.41421e-005)-(4.00001,1.41421e-005,3.00001)
+MapRealPos(final)=(-1.41421e-005,-1.41421e-005,-1.41421e-005)-(4.00001,1.41421e-005,9.00007)
+**Initial state of particles is loaded
+**2D-Simulation parameters:
+CaseName="CaseDambreakVal2D"
+RunName="CaseDambreakVal2D"
+PosDouble="1: Uses double and stores in single precision"
+SvTimers=True
+StepAlgorithm="Verlet"
+VerletSteps=40
+Kernel="Wendland"
+Viscosity="Artificial"
+Visco=0.020000
+ViscoBoundFactor=1.000000
+DeltaSph="None"
+Shifting="None"
+RigidAlgorithm="None"
+FloatingCount=0
+CaseNp=21001
+CaseNbound=1001
+CaseNfixed=1001
+CaseNmoving=0
+CaseNfloat=0
+CaseNfluid=20000
+PeriodicActive=0
+Dx=0.01
+H=0.014142
+CoefficientH=1
+CteB=1115537.125000
+Gamma=7.000000
+RhopZero=1000.000000
+Cs0=88.3672
+CFLnumber=0.200000
+DtIni=0.000160038
+DtMin=8.00192e-006
+DtAllParticles=False
+MassFluid=0.100000
+MassBound=0.100000
+Bwen (wendland)=-984716.812500
+TimeMax=2
+TimePart=0.01
+Gravity=(0.000000,0.000000,-9.810000)
+NpMinimum=1001
+RhopOut=True
+RhopOutMin=700.000000
+RhopOutMax=1300.000000
+**Requested cpu memory for 21001 particles: 2.3 MB.
+CellOrder="XYZ"
+CellMode="2H"
+Hdiv=1
+MapCells=(142,1,319)
+DomCells=(142,1,319)
+DomCellCode="13_6_13"
+**CellDiv: Requested cpu memory for 22051 particles: 0.7 MB.
+**CellDiv: Requested cpu memory for 5548 cells (CellMode=2H): 0.1 MB.
+RunMode="Pos-Double, OpenMP(Threads:8)"
+Allocated memory in CPU: 3230560 (3.08 MB)
+Part_0000        21001 particles successfully stored
+
+[Initialising simulation (waj6chzh)  31-05-2016 16:56:48]
+PART       PartTime      TotalSteps    Steps    Time/Sec   Finish time        
+=========  ============  ============  =======  =========  ===================
+Part_0001      0.010017           314      314     271.95  31-05-2016 17:05:52
+Part_0002      0.020012           628      314     292.86  31-05-2016 17:06:13
