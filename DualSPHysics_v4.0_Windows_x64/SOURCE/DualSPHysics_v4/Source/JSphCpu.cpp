@@ -924,56 +924,56 @@ template<bool psimple,TpKernel tker,TpFtMode ftmode,bool lamsps,TpDeltaSph tdelt
             }
 
             //-Shifting correction
-            if(shift && shiftposp1.x!=FLT_MAX){
-              const float massrhop=massp2/velrhop[p2].w;
-              const bool noshift=(boundp2 && (tshifting==SHIFT_NoBound || (tshifting==SHIFT_NoFixed && CODE_GetType(code[p2])==CODE_TYPE_FIXED)));
-              shiftposp1.x=(noshift? FLT_MAX: shiftposp1.x+massrhop*frx); //-For boundary do not use shifting / Con boundary anula shifting.
-              shiftposp1.y+=massrhop*fry;
-              shiftposp1.z+=massrhop*frz;
-              shiftdetectp1-=massrhop*(drx*frx+dry*fry+drz*frz);
-            }
+            //if(shift && shiftposp1.x!=FLT_MAX){
+            //  const float massrhop=massp2/velrhop[p2].w;
+            //  const bool noshift=(boundp2 && (tshifting==SHIFT_NoBound || (tshifting==SHIFT_NoFixed && CODE_GetType(code[p2])==CODE_TYPE_FIXED)));
+            //  shiftposp1.x=(noshift? FLT_MAX: shiftposp1.x+massrhop*frx); //-For boundary do not use shifting / Con boundary anula shifting.
+            //  shiftposp1.y+=massrhop*fry;
+            //  shiftposp1.z+=massrhop*frz;
+            //  shiftdetectp1-=massrhop*(drx*frx+dry*fry+drz*frz);
+            //}
 
             //===== Viscosity ===== 
-            if(compute){
-              const float dot=drx*dvx + dry*dvy + drz*dvz;
-              const float dot_rr2=dot/(rr2+Eta2);
-              visc=max(dot_rr2,visc);
-              if(!lamsps){//-Artificial viscosity 
-                if(dot<0){
-                  const float amubar=H*dot_rr2;  //amubar=CTE.h*dot/(rr2+CTE.eta2);
-                  const float robar=(rhopp1+velrhop[p2].w)*0.5f;
-                  const float pi_visc=(-visco*cbar*amubar/robar)*massp2*ftmassp1;
-                  acep1.x-=pi_visc*frx; acep1.y-=pi_visc*fry; acep1.z-=pi_visc*frz;
-                }
-              }
-              else{//-Laminar+SPS viscosity 
-                {//-Laminar contribution.
-                  const float robar2=(rhopp1+velrhop[p2].w);
-                  const float temp=4.f*visco/((rr2+Eta2)*robar2);  //-Simplification of / Simplificacion de: temp=2.0f*visco/((rr2+CTE.eta2)*robar); robar=(rhopp1+velrhop2.w)*0.5f;
-                  const float vtemp=massp2*temp*(drx*frx+dry*fry+drz*frz);  
-                  acep1.x+=vtemp*dvx; acep1.y+=vtemp*dvy; acep1.z+=vtemp*dvz;
-                }
-                //-SPS turbulence model.
-                float tau_xx=taup1.xx,tau_xy=taup1.xy,tau_xz=taup1.xz; //-taup1 is always zero when p1 is not a fluid particle / taup1 siempre es cero cuando p1 no es fluid.
-                float tau_yy=taup1.yy,tau_yz=taup1.yz,tau_zz=taup1.zz;
-                if(!boundp2 && !ftp2){//-Cuando p2 es fluido.  
-                  tau_xx+=tau[p2].xx; tau_xy+=tau[p2].xy; tau_xz+=tau[p2].xz;
-                  tau_yy+=tau[p2].yy; tau_yz+=tau[p2].yz; tau_zz+=tau[p2].zz;
-                }
-                acep1.x+=massp2*ftmassp1*(tau_xx*frx+tau_xy*fry+tau_xz*frz);
-                acep1.y+=massp2*ftmassp1*(tau_xy*frx+tau_yy*fry+tau_yz*frz);
-                acep1.z+=massp2*ftmassp1*(tau_xz*frx+tau_yz*fry+tau_zz*frz);
-                //-Velocity gradients.
-                if(!ftp1){//-When p1 is a fluid particle / Cuando p1 es fluido. 
-                  const float volp2=-massp2/velrhop[p2].w;
-                  float dv=dvx*volp2; gradvelp1.xx+=dv*frx; gradvelp1.xy+=dv*fry; gradvelp1.xz+=dv*frz;
-                        dv=dvy*volp2; gradvelp1.xy+=dv*frx; gradvelp1.yy+=dv*fry; gradvelp1.yz+=dv*frz;
-                        dv=dvz*volp2; gradvelp1.xz+=dv*frx; gradvelp1.yz+=dv*fry; gradvelp1.zz+=dv*frz;
-                  // to compute tau terms we assume that gradvel.xy=gradvel.dudy+gradvel.dvdx, gradvel.xz=gradvel.dudz+gradvel.dwdx, gradvel.yz=gradvel.dvdz+gradvel.dwdy
-                  // so only 6 elements are needed instead of 3x3.
-                }
-              }
-            }
+            //if(compute){
+            //  const float dot=drx*dvx + dry*dvy + drz*dvz;
+            //  const float dot_rr2=dot/(rr2+Eta2);
+            //  visc=max(dot_rr2,visc);
+            //  if(!lamsps){//-Artificial viscosity 
+            //    if(dot<0){
+            //      const float amubar=H*dot_rr2;  //amubar=CTE.h*dot/(rr2+CTE.eta2);
+            //      const float robar=(rhopp1+velrhop[p2].w)*0.5f;
+            //      const float pi_visc=(-visco*cbar*amubar/robar)*massp2*ftmassp1;
+            //      acep1.x-=pi_visc*frx; acep1.y-=pi_visc*fry; acep1.z-=pi_visc*frz;
+            //    }
+            //  }
+            //  else{//-Laminar+SPS viscosity 
+            //    {//-Laminar contribution.
+            //      const float robar2=(rhopp1+velrhop[p2].w);
+            //      const float temp=4.f*visco/((rr2+Eta2)*robar2);  //-Simplification of / Simplificacion de: temp=2.0f*visco/((rr2+CTE.eta2)*robar); robar=(rhopp1+velrhop2.w)*0.5f;
+            //      const float vtemp=massp2*temp*(drx*frx+dry*fry+drz*frz);  
+            //      acep1.x+=vtemp*dvx; acep1.y+=vtemp*dvy; acep1.z+=vtemp*dvz;
+            //    }
+            //    //-SPS turbulence model.
+            //    float tau_xx=taup1.xx,tau_xy=taup1.xy,tau_xz=taup1.xz; //-taup1 is always zero when p1 is not a fluid particle / taup1 siempre es cero cuando p1 no es fluid.
+            //    float tau_yy=taup1.yy,tau_yz=taup1.yz,tau_zz=taup1.zz;
+            //    if(!boundp2 && !ftp2){//-Cuando p2 es fluido.  
+            //      tau_xx+=tau[p2].xx; tau_xy+=tau[p2].xy; tau_xz+=tau[p2].xz;
+            //      tau_yy+=tau[p2].yy; tau_yz+=tau[p2].yz; tau_zz+=tau[p2].zz;
+            //    }
+            //    acep1.x+=massp2*ftmassp1*(tau_xx*frx+tau_xy*fry+tau_xz*frz);
+            //    acep1.y+=massp2*ftmassp1*(tau_xy*frx+tau_yy*fry+tau_yz*frz);
+            //    acep1.z+=massp2*ftmassp1*(tau_xz*frx+tau_yz*fry+tau_zz*frz);
+            //    //-Velocity gradients.
+            //    if(!ftp1){//-When p1 is a fluid particle / Cuando p1 es fluido. 
+            //      const float volp2=-massp2/velrhop[p2].w;
+            //      float dv=dvx*volp2; gradvelp1.xx+=dv*frx; gradvelp1.xy+=dv*fry; gradvelp1.xz+=dv*frz;
+            //            dv=dvy*volp2; gradvelp1.xy+=dv*frx; gradvelp1.yy+=dv*fry; gradvelp1.yz+=dv*frz;
+            //            dv=dvz*volp2; gradvelp1.xz+=dv*frx; gradvelp1.yz+=dv*fry; gradvelp1.zz+=dv*frz;
+            //      // to compute tau terms we assume that gradvel.xy=gradvel.dudy+gradvel.dvdx, gradvel.xz=gradvel.dudz+gradvel.dwdx, gradvel.yz=gradvel.dvdz+gradvel.dwdy
+            //      // so only 6 elements are needed instead of 3x3.
+            //    }
+            //  }
+            //}
           }
         }
       }
@@ -1003,7 +1003,7 @@ template<bool psimple,TpKernel tker,TpFtMode ftmode,bool lamsps,TpDeltaSph tdelt
   //-Keep max value in viscdt / Guarda en viscdt el valor maximo.
   for(int th=0;th<OmpThreads;th++)if(viscdt<viscth[th*STRIDE_OMP])viscdt=viscth[th*STRIDE_OMP];
 }
-//aqui?
+//aqui
 //==============================================================================
 /// Realiza interaccion DEM entre particulas Floating-Bound & Floating-Floating //(DEM)
 /// Perform DEM interaction between particles Floating-Bound & Floating-Floating //(DEM)
