@@ -852,7 +852,8 @@ template<bool psimple,TpKernel tker,TpFtMode ftmode,bool lamsps,TpDeltaSph tdelt
       if(ftp1 && (tdelta==DELTA_Dynamic || tdelta==DELTA_DynamicExt))deltap1=FLT_MAX;
       if(ftp1 && shift)shiftposp1.x=FLT_MAX;  //-For floating objects do not calculate shifting / Para floatings no se calcula shifting.
     }
-
+		
+	
     //-Obtain data of particle p1 / Obtiene datos de particula p1.
     const tfloat3 velp1=TFloat3(velrhop[p1].x,velrhop[p1].y,velrhop[p1].z);
     const float rhopp1=velrhop[p1].w;
@@ -876,6 +877,7 @@ template<bool psimple,TpKernel tker,TpFtMode ftmode,bool lamsps,TpDeltaSph tdelt
         //-Interaction of Fluid with type Fluid or Bound / Interaccion de Fluid con varias Fluid o Bound.
         //------------------------------------------------
         for(unsigned p2=pini;p2<pfin;p2++){
+		
           const float drx=(psimple? psposp1.x-pspos[p2].x: float(posp1.x-pos[p2].x));
           const float dry=(psimple? psposp1.y-pspos[p2].y: float(posp1.y-pos[p2].y));
           const float drz=(psimple? psposp1.z-pspos[p2].z: float(posp1.z-pos[p2].z));
@@ -891,7 +893,7 @@ template<bool psimple,TpKernel tker,TpFtMode ftmode,bool lamsps,TpDeltaSph tdelt
             bool ftp2=false;    //-Indicate if it is floating / Indica si es floating.
             bool compute=true;  //-Deactivate when using DEM and if it is of type float-float or float-bound /  Se desactiva cuando se usa DEM y es float-float o float-bound.
             if(USE_FLOATING){
-              ftp2=(CODE_GetType(code[p2])==CODE_TYPE_FLOATING);
+			  ftp2=(CODE_GetType(code[p2])==CODE_TYPE_FLOATING);
               if(ftp2)massp2=FtObjs[CODE_GetTypeValue(code[p2])].massp;
               #ifdef DELTA_HEAVYFLOATING
                 if(ftp2 && massp2<=(MassFluid*1.2f) && (tdelta==DELTA_Dynamic || tdelta==DELTA_DynamicExt))deltap1=FLT_MAX;
@@ -1015,103 +1017,104 @@ template<bool psimple> void JSphCpu::InteractionForcesDEM
   ,const tdouble3 *pos,const tfloat3 *pspos,const tfloat4 *velrhop,const word *code,const unsigned *idp
   ,float &viscdt,tfloat3 *ace)const
 {
-  //-Initialize demdtth to calculate max demdt with OpenMP / Inicializa demdtth para calcular demdt maximo con OpenMP.
-  float demdtth[MAXTHREADS_OMP*STRIDE_OMP];
-  for(int th=0;th<OmpThreads;th++)demdtth[th*STRIDE_OMP]=-FLT_MAX;
-  //-Initial execution with OpenMP / Inicia ejecucion con OpenMP.
-  const int nft=int(nfloat);
-  #ifdef _WITHOMP
-    #pragma omp parallel for schedule (guided)
-  #endif
-  for(int cf=0;cf<nft;cf++){
-    const unsigned p1=ftridp[cf];
-    if(p1!=UINT_MAX){
-      float demdtp1=0;
-      tfloat3 acep1=TFloat3(0);
+	
+  ////-Initialize demdtth to calculate max demdt with OpenMP / Inicializa demdtth para calcular demdt maximo con OpenMP.
+  //float demdtth[MAXTHREADS_OMP*STRIDE_OMP];
+  //for(int th=0;th<OmpThreads;th++)demdtth[th*STRIDE_OMP]=-FLT_MAX;
+  ////-Initial execution with OpenMP / Inicia ejecucion con OpenMP.
+  //const int nft=int(nfloat);
+  //#ifdef _WITHOMP
+  //  #pragma omp parallel for schedule (guided)
+  //#endif
+  //for(int cf=0;cf<nft;cf++){
+  //  const unsigned p1=ftridp[cf];
+  //  if(p1!=UINT_MAX){
+  //    float demdtp1=0;
+  //    tfloat3 acep1=TFloat3(0);
 
-      //-Get data of particle p1 / Obtiene datos de particula p1.
-      const tfloat3 psposp1=(psimple? pspos[p1]: TFloat3(0));
-      const tdouble3 posp1=(psimple? TDouble3(0): pos[p1]);
-      const word tavp1=CODE_GetTypeAndValue(code[p1]);
-      const float masstotp1=demobjs[tavp1].mass;
-      const float taup1=demobjs[tavp1].tau;
-      const float kfricp1=demobjs[tavp1].kfric;
-      const float restitup1=demobjs[tavp1].restitu;
+  //    //-Get data of particle p1 / Obtiene datos de particula p1.
+  //    const tfloat3 psposp1=(psimple? pspos[p1]: TFloat3(0));
+  //    const tdouble3 posp1=(psimple? TDouble3(0): pos[p1]);
+  //    const word tavp1=CODE_GetTypeAndValue(code[p1]);
+  //    const float masstotp1=demobjs[tavp1].mass;
+  //    const float taup1=demobjs[tavp1].tau;
+  //    const float kfricp1=demobjs[tavp1].kfric;
+  //    const float restitup1=demobjs[tavp1].restitu;
 
-      //-Get interaction limits / Obtiene limites de interaccion
-      int cxini,cxfin,yini,yfin,zini,zfin;
-      GetInteractionCells(dcell[p1],hdiv,nc,cellzero,cxini,cxfin,yini,yfin,zini,zfin);
+  //    //-Get interaction limits / Obtiene limites de interaccion
+  //    int cxini,cxfin,yini,yfin,zini,zfin;
+  //    GetInteractionCells(dcell[p1],hdiv,nc,cellzero,cxini,cxfin,yini,yfin,zini,zfin);
 
-      //-Search for neighbours in adjacent cells (first bound and then fluid+floating) / Busqueda de vecinos en celdas adyacentes (primero bound y despues fluid+floating).
-      for(unsigned cellinitial=0;cellinitial<=cellfluid;cellinitial+=cellfluid){
-        for(int z=zini;z<zfin;z++){
-          const int zmod=(nc.w)*z+cellinitial; //-Sum from start of fluid or boundary cells / Le suma donde empiezan las celdas de fluido o bound.
-          for(int y=yini;y<yfin;y++){
-            int ymod=zmod+nc.x*y;
-            const unsigned pini=beginendcell[cxini+ymod];
-            const unsigned pfin=beginendcell[cxfin+ymod];
+  //    //-Search for neighbours in adjacent cells (first bound and then fluid+floating) / Busqueda de vecinos en celdas adyacentes (primero bound y despues fluid+floating).
+  //    for(unsigned cellinitial=0;cellinitial<=cellfluid;cellinitial+=cellfluid){
+  //      for(int z=zini;z<zfin;z++){
+  //        const int zmod=(nc.w)*z+cellinitial; //-Sum from start of fluid or boundary cells / Le suma donde empiezan las celdas de fluido o bound.
+  //        for(int y=yini;y<yfin;y++){
+  //          int ymod=zmod+nc.x*y;
+  //          const unsigned pini=beginendcell[cxini+ymod];
+  //          const unsigned pfin=beginendcell[cxfin+ymod];
 
-            //-Interaction of Floating Object particles with type Fluid or Bound / Interaccion de Floating con varias Fluid o Bound.
-            //------------------------------------------------
-            for(unsigned p2=pini;p2<pfin;p2++)if(CODE_GetType(code[p2])!=CODE_TYPE_FLUID && tavp1!=CODE_GetTypeAndValue(code[p2])){
-              const float drx=(psimple? psposp1.x-pspos[p2].x: float(posp1.x-pos[p2].x));
-              const float dry=(psimple? psposp1.y-pspos[p2].y: float(posp1.y-pos[p2].y));
-              const float drz=(psimple? psposp1.z-pspos[p2].z: float(posp1.z-pos[p2].z));
-              const float rr2=drx*drx+dry*dry+drz*drz;
-              const float rad=sqrt(rr2);
+  //          //-Interaction of Floating Object particles with type Fluid or Bound / Interaccion de Floating con varias Fluid o Bound.
+  //          //------------------------------------------------
+  //          for(unsigned p2=pini;p2<pfin;p2++)if(CODE_GetType(code[p2])!=CODE_TYPE_FLUID && tavp1!=CODE_GetTypeAndValue(code[p2])){
+  //            const float drx=(psimple? psposp1.x-pspos[p2].x: float(posp1.x-pos[p2].x));
+  //            const float dry=(psimple? psposp1.y-pspos[p2].y: float(posp1.y-pos[p2].y));
+  //            const float drz=(psimple? psposp1.z-pspos[p2].z: float(posp1.z-pos[p2].z));
+  //            const float rr2=drx*drx+dry*dry+drz*drz;
+  //            const float rad=sqrt(rr2);
 
-              //-Calculate max value of demdt / Calcula valor maximo de demdt.
-              const word tavp2=CODE_GetTypeAndValue(code[p2]);
-              const float masstotp2=demobjs[tavp2].mass;
-              const float taup2=demobjs[tavp2].tau;
-              const float kfricp2=demobjs[tavp2].kfric;
-              const float restitup2=demobjs[tavp2].restitu;
-              //const StDemData *demp2=demobjs+CODE_GetTypeAndValue(code[p2]);
+  //            //-Calculate max value of demdt / Calcula valor maximo de demdt.
+  //            const word tavp2=CODE_GetTypeAndValue(code[p2]);
+  //            const float masstotp2=demobjs[tavp2].mass;
+  //            const float taup2=demobjs[tavp2].tau;
+  //            const float kfricp2=demobjs[tavp2].kfric;
+  //            const float restitup2=demobjs[tavp2].restitu;
+  //            //const StDemData *demp2=demobjs+CODE_GetTypeAndValue(code[p2]);
 
-              const float nu_mass=(!cellinitial? masstotp1/2: masstotp1*masstotp2/(masstotp1+masstotp2)); //-Con boundary toma la propia masa del floating 1.
-              const float kn=4/(3*(taup1+taup2))*sqrt(float(Dp)/4); //generalized rigidity - Lemieux 2008
-              const float dvx=velrhop[p1].x-velrhop[p2].x, dvy=velrhop[p1].y-velrhop[p2].y, dvz=velrhop[p1].z-velrhop[p2].z; //vji
-              const float nx=drx/rad, ny=dry/rad, nz=drz/rad; //normal_ji               
-              const float vn=dvx*nx+dvy*ny+dvz*nz; //vji.nji
-              const float demvisc=0.2f/(3.21f*(pow(nu_mass/kn,0.4f)*pow(abs(vn),-0.2f))/40.f);
-              if(demdtp1<demvisc)demdtp1=demvisc;
+  //            const float nu_mass=(!cellinitial? masstotp1/2: masstotp1*masstotp2/(masstotp1+masstotp2)); //-Con boundary toma la propia masa del floating 1.
+  //            const float kn=4/(3*(taup1+taup2))*sqrt(float(Dp)/4); //generalized rigidity - Lemieux 2008
+  //            const float dvx=velrhop[p1].x-velrhop[p2].x, dvy=velrhop[p1].y-velrhop[p2].y, dvz=velrhop[p1].z-velrhop[p2].z; //vji
+  //            const float nx=drx/rad, ny=dry/rad, nz=drz/rad; //normal_ji               
+  //            const float vn=dvx*nx+dvy*ny+dvz*nz; //vji.nji
+  //            const float demvisc=0.2f/(3.21f*(pow(nu_mass/kn,0.4f)*pow(abs(vn),-0.2f))/40.f);
+  //            if(demdtp1<demvisc)demdtp1=demvisc;
 
-              const float over_lap=1.0f*float(Dp)-rad; //-(ri+rj)-|dij|
-              if(over_lap>0.0f){ //-Contact
-                //normal
-                const float eij=(restitup1+restitup2)/2;
-                const float gn=-(2.0f*log(eij)*sqrt(nu_mass*kn))/(sqrt(float(PI)+log(eij)*log(eij))); //generalized damping - Cummins 2010
-                //const float gn=0.08f*sqrt(nu_mass*sqrt(float(Dp)/2)/((taup1+taup2)/2)); //generalized damping - Lemieux 2008
-                float rep=kn*pow(over_lap,1.5f);
-                float fn=rep-gn*pow(over_lap,0.25f)*vn;                   
-                acep1.x+=(fn*nx); acep1.y+=(fn*ny); acep1.z+=(fn*nz); //-Force is applied in the normal between the particles
-                //tangential
-                float dvxt=dvx-vn*nx, dvyt=dvy-vn*ny, dvzt=dvz-vn*nz; //Vji_t
-                float vt=sqrt(dvxt*dvxt + dvyt*dvyt + dvzt*dvzt);
-                float tx=0, ty=0, tz=0; //Tang vel unit vector
-                if(vt!=0){ tx=dvxt/vt; ty=dvyt/vt; tz=dvzt/vt; }
-                float ft_elast=2*(kn*float(DemDtForce)-gn)*vt/7;   //Elastic frictional string -->  ft_elast=2*(kn*fdispl-gn*vt)/7; fdispl=dtforce*vt;
-                const float kfric_ij=(kfricp1+kfricp2)/2;
-                float ft=kfric_ij*fn*tanh(8*vt);  //Coulomb
-                ft=(ft<ft_elast? ft: ft_elast);   //not above yield criteria, visco-elastic model
-                acep1.x+=(ft*tx); acep1.y+=(ft*ty); acep1.z+=(ft*tz);
-              } 
-            }
-          }
-        }
-      }
-      //-Sum results together / Almacena resultados.
-      if(acep1.x||acep1.y||acep1.z){
-        ace[p1]=ace[p1]+acep1;
-        const int th=omp_get_thread_num();
-        if(demdtth[th*STRIDE_OMP]<demdtp1)demdtth[th*STRIDE_OMP]=demdtp1;
-      }
-    }
-  }
-  //-Update viscdt with max value of viscdt or demdt* / Actualiza viscdt con el valor maximo de viscdt y demdt*.
-  float demdt=demdtth[0];
-  for(int th=1;th<OmpThreads;th++)if(demdt<demdtth[th*STRIDE_OMP])demdt=demdtth[th*STRIDE_OMP];
-  if(viscdt<demdt)viscdt=demdt;
+  //            const float over_lap=1.0f*float(Dp)-rad; //-(ri+rj)-|dij|
+  //            if(over_lap>0.0f){ //-Contact
+  //              //normal
+  //              const float eij=(restitup1+restitup2)/2;
+  //              const float gn=-(2.0f*log(eij)*sqrt(nu_mass*kn))/(sqrt(float(PI)+log(eij)*log(eij))); //generalized damping - Cummins 2010
+  //              //const float gn=0.08f*sqrt(nu_mass*sqrt(float(Dp)/2)/((taup1+taup2)/2)); //generalized damping - Lemieux 2008
+  //              float rep=kn*pow(over_lap,1.5f);
+  //              float fn=rep-gn*pow(over_lap,0.25f)*vn;                   
+  //              acep1.x+=(fn*nx); acep1.y+=(fn*ny); acep1.z+=(fn*nz); //-Force is applied in the normal between the particles
+  //              //tangential
+  //              float dvxt=dvx-vn*nx, dvyt=dvy-vn*ny, dvzt=dvz-vn*nz; //Vji_t
+  //              float vt=sqrt(dvxt*dvxt + dvyt*dvyt + dvzt*dvzt);
+  //              float tx=0, ty=0, tz=0; //Tang vel unit vector
+  //              if(vt!=0){ tx=dvxt/vt; ty=dvyt/vt; tz=dvzt/vt; }
+  //              float ft_elast=2*(kn*float(DemDtForce)-gn)*vt/7;   //Elastic frictional string -->  ft_elast=2*(kn*fdispl-gn*vt)/7; fdispl=dtforce*vt;
+  //              const float kfric_ij=(kfricp1+kfricp2)/2;
+  //              float ft=kfric_ij*fn*tanh(8*vt);  //Coulomb
+  //              ft=(ft<ft_elast? ft: ft_elast);   //not above yield criteria, visco-elastic model
+  //              acep1.x+=(ft*tx); acep1.y+=(ft*ty); acep1.z+=(ft*tz);
+  //            } 
+  //          }
+  //        }
+  //      }
+  //    }
+  //    //-Sum results together / Almacena resultados.
+  //    if(acep1.x||acep1.y||acep1.z){
+  //      ace[p1]=ace[p1]+acep1;
+  //      const int th=omp_get_thread_num();
+  //      if(demdtth[th*STRIDE_OMP]<demdtp1)demdtth[th*STRIDE_OMP]=demdtp1;
+  //    }
+  //  }
+  //}
+  ////-Update viscdt with max value of viscdt or demdt* / Actualiza viscdt con el valor maximo de viscdt y demdt*.
+  //float demdt=demdtth[0];
+  //for(int th=1;th<OmpThreads;th++)if(demdt<demdtth[th*STRIDE_OMP])demdt=demdtth[th*STRIDE_OMP];
+  //if(viscdt<demdt)viscdt=demdt;
 }
 
 
@@ -1162,7 +1165,13 @@ template<bool psimple,TpKernel tker,TpFtMode ftmode,bool lamsps,TpDeltaSph tdelt
   const tint3 cellzero=TInt3(cellmin.x,cellmin.y,cellmin.z);
   const unsigned cellfluid=nc.w*nc.z+1;
   const int hdiv=(CellMode==CELLMODE_H? 2: 1);
+
+  /*
   
+  O que mudou... não tem viscosidade, não tem floating objects, não usa o DEM approach, não tem turbulencia e laminar viscosity
+  
+  */
+
   if(npf){
     //-Interaction Fluid-Fluid / Interaccion Fluid-Fluid
     InteractionForcesFluid<psimple,tker,ftmode,lamsps,tdelta,shift> (npf,npb,nc,hdiv,cellfluid,Visco                 ,begincell,cellzero,dcell,spstau,spsgradvel,pos,pspos,velrhop,code,idp,press,viscdt,ar,ace,delta,tshifting,shiftpos,shiftdetect);
@@ -1170,10 +1179,10 @@ template<bool psimple,TpKernel tker,TpFtMode ftmode,bool lamsps,TpDeltaSph tdelt
     InteractionForcesFluid<psimple,tker,ftmode,lamsps,tdelta,shift> (npf,npb,nc,hdiv,0        ,Visco*ViscoBoundFactor,begincell,cellzero,dcell,spstau,spsgradvel,pos,pspos,velrhop,code,idp,press,viscdt,ar,ace,delta,tshifting,shiftpos,shiftdetect);
 
     //-Interaction of DEM Floating-Bound & Floating-Floating / Interaccion DEM Floating-Bound & Floating-Floating //(DEM)
-    if(USE_DEM)InteractionForcesDEM<psimple> (CaseNfloat,nc,hdiv,cellfluid,begincell,cellzero,dcell,FtRidp,DemObjs,pos,pspos,velrhop,code,idp,viscdt,ace);
+    //if(USE_DEM)InteractionForcesDEM<psimple> (CaseNfloat,nc,hdiv,cellfluid,begincell,cellzero,dcell,FtRidp,DemObjs,pos,pspos,velrhop,code,idp,viscdt,ace);
 
     //-Computes tau for Laminar+SPS.
-    if(lamsps)ComputeSpsTau(npf,npb,velrhop,spsgradvel,spstau);
+    //if(lamsps)ComputeSpsTau(npf,npb,velrhop,spsgradvel,spstau);
   }
   if(npbok){
     //-Interaction of type Bound-Fluid / Interaccion Bound-Fluid
