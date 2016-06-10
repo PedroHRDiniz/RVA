@@ -51,11 +51,11 @@ Memory: 0.00Gb 3.48Mb (3646089)
 
 > MAIN
 FileShapes> Box_Dp.vtk  shapes:5  points:8   (time:0.001s)
-FileShapes> Building_Dp.vtk  shapes:6  points:12   (time:0.001s)
+FileShapes> Building_Dp.vtk  shapes:6  points:12   (time:0.000s)
 <MAIN (Operations= 9+5+2 = 16)
 
 Triangles: 46 (0 ignored)
-[Draw-End  time:0.030s]
+[Draw-End  time:0.007s]
 
 [PreparePoints]
 BitSizeTot: 23 (2 + 8+7+6)
@@ -80,15 +80,15 @@ Speed of sound: 33.6755 max(33.6755,16.8377)
 
 Coefh:1.000000 (hdp:1.732051)
 
-[PreparePoints-End  time:0.052s]
+[PreparePoints-End  time:0.017s]
 
 [SaveCase3D]
-CaseDambreak.bi4<double>  (time: 0.022s)
-CaseDambreak_out/CaseDambreak_All.vtk  (time: 0.029s)
-CaseDambreak_out/CaseDambreak_Bound.vtk  (time: 0.009s)
-CaseDambreak_out/CaseDambreak_Fluid.vtk  (time: 0.018s)
+CaseDambreak.bi4<double>  (time: 0.012s)
+CaseDambreak_out/CaseDambreak_All.vtk  (time: 0.020s)
+CaseDambreak_out/CaseDambreak_Bound.vtk  (time: 0.005s)
+CaseDambreak_out/CaseDambreak_Fluid.vtk  (time: 0.015s)
 CaseDambreak_out/CaseDambreak.xml  (time: 0.004s)
 
-Save files time: 0.082s
-[SaveCase3D-End  time:0.094s]
+Save files time: 0.056s
+[SaveCase3D-End  time:0.062s]
 
